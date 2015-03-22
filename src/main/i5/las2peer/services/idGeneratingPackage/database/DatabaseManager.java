@@ -6,15 +6,16 @@ import java.sql.SQLException;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
- * This class manages database credentials and provides connection from a connection pooling system
+ * This class manages database credentials and provides connection from a
+ * connection pooling system
  *
  */
 public class DatabaseManager {
 
 	private static BasicDataSource dataSource;
 
-	public DatabaseManager(String jdbcDriverClassName, String jdbcLogin, String jdbcPass, String jdbcUrl,
-			String jdbcSchema) {
+	public DatabaseManager(String jdbcDriverClassName, String jdbcLogin,
+			String jdbcPass, String jdbcUrl, String jdbcSchema) {
 		// prepare and configure data source
 		dataSource = new BasicDataSource();
 		dataSource.setDefaultAutoCommit(true);
