@@ -152,14 +152,9 @@ public class IdGeneratingTest {
 
 		try {
 			c.setLogin(Long.toString(testAgent.getId()), testPass);
-			ClientResponse result = c
-					.sendRequest(
-							"PUT",
-							mainPath + "id",
-							"{\"calling_service\":\"TestEntry\", \"calling_method\": \"TestEntry\", \"OIDC_user\": \"TestEntry\"}"); // testInput
-																																		// is
-																																		// the
-																																		// pathParam
+			ClientResponse result = c.sendRequest(
+							"POST", mainPath + "id",
+							"{\"calling_service\":\"TestEntry\", \"calling_method\": \"TestEntry\", \"OIDC_user\": \"TestEntry\"}"); 
 			assertEquals(200, result.getHttpCode());
 			assertTrue(result.getResponse().length() > 4);
 			System.out.println("Result of 'testIdGeneration': "

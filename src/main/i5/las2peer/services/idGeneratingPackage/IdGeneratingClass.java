@@ -6,7 +6,7 @@ import i5.las2peer.restMapper.MediaType;
 import i5.las2peer.restMapper.RESTMapper;
 import i5.las2peer.restMapper.annotations.ContentParam;
 import i5.las2peer.restMapper.annotations.GET;
-import i5.las2peer.restMapper.annotations.PUT;
+import i5.las2peer.restMapper.annotations.POST;
 import i5.las2peer.restMapper.annotations.Path;
 import i5.las2peer.restMapper.annotations.PathParam;
 import i5.las2peer.restMapper.annotations.Produces;
@@ -96,7 +96,7 @@ public class IdGeneratingClass extends Service {
 	 * @return HttpResponse
 	 */
 
-	@PUT
+	@POST
 	@Path("id")
 	@Summary("Generate and store a new Id. The generated value is returned, and the a copy of"
 			+ "it together with information like the service from where it was called, user, time etc.")
