@@ -16,7 +16,7 @@ The service will store the request information together with the generated ID an
 
 ##Build
 
-First, create the Annotations Service database, refer to: [Database](https://github.com/rwth-acis/LAS2peer-IdGeneratingService/tree/master/DB).
+First, create the Id Generating Service database, refer to: [Database](https://github.com/rwth-acis/LAS2peer-IdGeneratingService/tree/master/DB).
 
 Then, build the Service:
 
