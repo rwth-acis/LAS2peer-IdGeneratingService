@@ -7,3 +7,34 @@ The request needs to provide information:
 
 The request information must be included in payload. The response contains the generated Id for this request.
 The service will store the request information together with the generated ID and timestamp of the request in a MySQL database.
+
+##Requirements
+
+* Installed Java 7 JDK
+* Installed Apache Ant
+* Installed MySQL
+
+##Build
+
+First, create the Annotations Service database, refer to: [Database](https://github.com/rwth-acis/LAS2peer-IdGeneratingService/tree/master/DB).
+
+Then, build the Service:
+
+```
+ant all
+```
+
+##Start
+
+To start Annotations Service, use one of the available start scripts:
+  
+  * `Windows: bin/startNetwork.bat`
+  * `Unix, Mac: bin/startNetwork.sh`
+
+After successful start,Annotations Service is available under
+
+  [http://localhost:8082/annotations](http://localhost:8082/annotations)
+  
+
+##License
+LAS2peer-IdGeneratingService is freely distributable under the [MIT License](https://github.com/rwth-acis/las2peer-IdGeneratingService/blob/master/LICENSE).
