@@ -26,14 +26,14 @@ ant all
 
 ##Start
 
-To start Annotations Service, use one of the available start scripts:
+To start the Service, use one of the available start scripts:
   
   * `Windows: bin/startNetwork.bat`
   * `Unix, Mac: bin/startNetwork.sh`
 
 After successful start,Annotations Service is available under
 
-  [http://localhost:8082/annotations](http://localhost:8082/annotations)
+  [http://localhost:8082/generateId](http://localhost:8082/generateId)
   
 
 ##License
