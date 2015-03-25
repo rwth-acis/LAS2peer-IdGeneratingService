@@ -28,7 +28,7 @@ import org.junit.Test;
 public class IdGeneratingTest {
 
 	private static final String HTTP_ADDRESS = "http://127.0.0.1";
-	private static final int HTTP_PORT = WebConnector.DEFAULT_HTTP_PORT;
+	private static final int HTTP_PORT = 8082;//WebConnector.DEFAULT_HTTP_PORT;
 
 	private static LocalNode node;
 	private static WebConnector connector;
@@ -109,37 +109,7 @@ public class IdGeneratingTest {
 		System.out.println(logStream.toString());
 
 	}
-
-	/**
-	 * 
-	 * Tests the validation method.
-	 * 
-	 */
-	@Test
-	public void testValidateLogin() {
-		MiniClient c = new MiniClient();
-		c.setAddressPort(HTTP_ADDRESS, HTTP_PORT);
-
-		try {
-			c.setLogin(Long.toString(testAgent.getId()), testPass);
-			ClientResponse result = c.sendRequest("GET", mainPath
-					+ "validation", "");
-			assertEquals(200, result.getHttpCode());
-			assertTrue(result.getResponse().trim().contains("adam")); // login
-																		// name
-																		// is
-																		// part
-																		// of
-																		// response
-			System.out.println("Result of 'testValidateLogin': "
-					+ result.getResponse().trim());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Exception: " + e);
-		}
-
-	}
-
+	
 	/**
 	 * 
 	 * Test the method that generates one id.
