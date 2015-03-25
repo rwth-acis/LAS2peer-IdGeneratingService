@@ -15,6 +15,7 @@ import i5.las2peer.restMapper.annotations.swagger.ApiInfo;
 import i5.las2peer.restMapper.annotations.swagger.ApiResponse;
 import i5.las2peer.restMapper.annotations.swagger.ApiResponses;
 import i5.las2peer.restMapper.annotations.swagger.Notes;
+import i5.las2peer.restMapper.annotations.swagger.ResourceListApi;
 import i5.las2peer.restMapper.annotations.swagger.Summary;
 import i5.las2peer.restMapper.tools.ValidationResult;
 import i5.las2peer.restMapper.tools.XMLCheck;
@@ -63,43 +64,15 @@ public class IdGeneratingClass extends Service {
 	}
 
 	/**
-	 * Simple function to validate a user login. Basically it only serves as a
-	 * "calling point" and does not really validate a user (since this is done
-	 * previously by LAS2peer itself, the user does not reach this method if he
-	 * or she is not authenticated).
+	 * Method to generate new Id, store it in the database, and return the newly inserted value.
 	 * 
-	 */
-	@GET
-	@Path("validation")
-	public HttpResponse validateLogin() {
-		String returnString = "";
-		returnString += "You are "
-				+ ((UserAgent) getActiveAgent()).getLoginName()
-				+ " and your login is valid!";
-
-		HttpResponse res = new HttpResponse(returnString);
-		res.setStatus(200);
-		return res;
-	}
-
-	/**
-	 * Another example method.
-	 * 
-	 * @param myInput
-	 * 
-	 */
-	/**
-	 * 
-	 * @param data
-	 *            video details that need to be saved. The data come in a JSON
-	 *            format
 	 * @return HttpResponse
 	 */
 
 	@POST
 	@Path("id")
-	@Summary("Generate and store a new Id. The generated value is returned, and the a copy of"
-			+ "it together with information like the service from where it was called, user, time etc.")
+	@ResourceListApi(description = "Generated identifier.")
+	@Summary("Generate and store a new Id. The generated value is returned.")
 	@Notes("Requires authentication.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Id returned and saved successfully."),
