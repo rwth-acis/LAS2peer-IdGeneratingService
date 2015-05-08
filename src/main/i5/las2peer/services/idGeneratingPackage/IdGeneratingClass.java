@@ -40,8 +40,12 @@ import net.minidev.json.parser.ParseException;
  * 
  */
 @Path("generateId")
-@Version("0.1")
-@ApiInfo(title = "Id Generation", description = "<p>A RESTful service for creating ids.</p>", termsOfServiceUrl = "", contact = "bakiu@dbis.rwth-aachen.de", license = "", licenseUrl = "")
+@Version("0.1.1")
+@ApiInfo(title = "Id Generation", 
+description = "<p>A RESTful service for creating unique ids.</p>", 
+termsOfServiceUrl = "", contact = "bakiu@dbis.rwth-aachen.de",
+license = "MIT",
+licenseUrl = "https://github.com/rwth-acis/LAS2peer-IdGeneratingService/blob/master/LICENSE")
 public class IdGeneratingClass extends Service {
 
 	private String jdbcDriverClassName;
@@ -53,12 +57,8 @@ public class IdGeneratingClass extends Service {
 	private DatabaseManager dbm;
 
 	public IdGeneratingClass() {
-		// read and set properties values
-		// IF THE SERVICE CLASS NAME IS CHANGED, THE PROPERTIES FILE NAME NEED
-		// TO BE CHANGED TOO!
+		
 		setFieldValues();
-		// instantiate a database manager to handle database connection pooling
-		// and credentials
 		dbm = new DatabaseManager(jdbcDriverClassName, jdbcLogin, jdbcPass,
 				jdbcUrl, jdbcSchema);
 	}
@@ -92,32 +92,28 @@ public class IdGeneratingClass extends Service {
 			}
 			// if(getActiveAgent().getId() !=
 			// getActiveNode().getAnonymous().getId()){
-			Object callingServiceObj = new String("calling_service");
-			Object callingMethodObj = new String("calling_method");
-			Object oidcUserObj = new String("OIDC_user");
+			Object callingServiceObj = new String("service");
+			//Object callingMethodObj = new String("calling_method");
+			//Object oidcUserObj = new String("OIDC_user");
 
 			String callingService = "";
-			String callingMethod = "";
-			String oidcUser = "";
+			//String callingMethod = "";
+			//String oidcUser = "";
 
 			callingService = getKeyFromJSON(callingServiceObj, o, false);
-			callingMethod = getKeyFromJSON(callingMethodObj, o, false);
-			oidcUser = getKeyFromJSON(oidcUserObj, o, false);
+			//callingMethod = getKeyFromJSON(callingMethodObj, o, false);
+			//oidcUser = getKeyFromJSON(oidcUserObj, o, false);
 
 			conn = dbm.getConnection();
 
-			if (!callingService.equals("") && !callingMethod.equals("")
-					&& !callingMethod.equals("")) {
+			if (!callingService.equals("")) {
 
 				PreparedStatement preparedStatement = null;
 				preparedStatement = conn.prepareStatement(
-						"INSERT INTO id_generated(calling_service,"
-								+ " calling_method	, OIDC_user)"
-								+ "					 VALUES (?,?,?);",
+						"INSERT INTO id_generated(service)"
+								+ "					 VALUES (?);",
 						Statement.RETURN_GENERATED_KEYS);
 				preparedStatement.setString(1, callingService);
-				preparedStatement.setString(2, callingMethod);
-				preparedStatement.setString(3, oidcUser);
 				// preparedStatement.setString(4, new
 				// Timestamp(date.getTime()).toString());
 
@@ -135,9 +131,7 @@ public class IdGeneratingClass extends Service {
 				// return HTTP Response on error
 				HttpResponse er = new HttpResponse("Internal error: "
 						+ "Missing JSON object member with key \""
-						+ callingServiceObj.toString() + "\" and/or " + "\""
-						+ callingMethodObj.toString() + "\" and/or " + "\""
-						+ oidcUserObj.toString() + "\"" + "");
+						+ callingServiceObj.toString() + "\" ");
 				er.setStatus(400);
 				return er;
 			}
