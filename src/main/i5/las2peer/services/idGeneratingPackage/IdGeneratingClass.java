@@ -40,7 +40,7 @@ import net.minidev.json.parser.ParseException;
  * 
  */
 @Path("generateId")
-@Version("0.1")
+@Version("0.1.1")
 @ApiInfo(title = "Id Generation", 
 description = "<p>A RESTful service for creating unique ids.</p>", 
 termsOfServiceUrl = "", contact = "bakiu@dbis.rwth-aachen.de",
