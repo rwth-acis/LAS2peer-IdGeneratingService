@@ -12,7 +12,7 @@ USE idgeneration;
 
 CREATE TABLE IF NOT EXISTS `id_generated` (
 `Id` bigint(20) unsigned NOT NULL,
-  `calling_service` varchar(250) DEFAULT NULL
+  `service` varchar(250) DEFAULT NULL
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10001 ;
 
