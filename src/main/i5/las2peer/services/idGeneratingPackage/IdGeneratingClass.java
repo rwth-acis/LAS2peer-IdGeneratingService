@@ -118,15 +118,24 @@ public class IdGeneratingClass extends Service {
 				// Timestamp(date.getTime()).toString());
 
 				preparedStatement.executeUpdate();
-				ResultSet keys = preparedStatement.getGeneratedKeys();
-				keys.next();
-				int key = keys.getInt(1);
-				String id = key + "";
+				if(preparedStatement.getUpdateCount()>=0){
+					ResultSet keys = preparedStatement.getGeneratedKeys();
+					keys.next();
+					int key = keys.getInt(1);
+					String id = key + "";
 
-				// return
-				HttpResponse r = new HttpResponse(id);
-				r.setStatus(200);
-				return r;
+					// return
+					HttpResponse r = new HttpResponse(id);
+					r.setStatus(200);
+					return r;
+				} else {
+					String result = "Could not get an Id.";
+					// return
+					HttpResponse r = new HttpResponse(result);
+					r.setStatus(500);
+					return r;
+				}
+				
 			} else {
 				// return HTTP Response on error
 				HttpResponse er = new HttpResponse("Internal error: "
