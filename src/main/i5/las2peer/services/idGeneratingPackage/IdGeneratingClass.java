@@ -92,7 +92,7 @@ public class IdGeneratingClass extends Service {
 			}
 			// if(getActiveAgent().getId() !=
 			// getActiveNode().getAnonymous().getId()){
-			Object callingServiceObj = new String("calling_service");
+			Object callingServiceObj = new String("service");
 			//Object callingMethodObj = new String("calling_method");
 			//Object oidcUserObj = new String("OIDC_user");
 
@@ -110,7 +110,7 @@ public class IdGeneratingClass extends Service {
 
 				PreparedStatement preparedStatement = null;
 				preparedStatement = conn.prepareStatement(
-						"INSERT INTO id_generated(calling_service)"
+						"INSERT INTO id_generated(service)"
 								+ "					 VALUES (?);",
 						Statement.RETURN_GENERATED_KEYS);
 				preparedStatement.setString(1, callingService);

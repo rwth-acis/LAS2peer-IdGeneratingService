@@ -124,7 +124,7 @@ public class IdGeneratingTest {
 			c.setLogin(Long.toString(testAgent.getId()), testPass);
 			ClientResponse result = c.sendRequest(
 							"POST", mainPath + "id",
-							"{\"calling_service\":\"TestEntry\" }"); 
+							"{\"service\":\"TestEntry\" }"); 
 			assertEquals(200, result.getHttpCode());
 			assertTrue(result.getResponse().length() > 4);
 			System.out.println("Result of 'testIdGeneration': "
