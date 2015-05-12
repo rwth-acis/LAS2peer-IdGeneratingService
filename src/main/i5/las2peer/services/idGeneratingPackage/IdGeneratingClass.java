@@ -40,12 +40,8 @@ import net.minidev.json.parser.ParseException;
  * 
  */
 @Path("generateId")
-@Version("0.1.1")
-@ApiInfo(title = "Id Generation", 
-description = "<p>A RESTful service for creating unique ids.</p>", 
-termsOfServiceUrl = "", contact = "bakiu@dbis.rwth-aachen.de",
-license = "MIT",
-licenseUrl = "https://github.com/rwth-acis/LAS2peer-IdGeneratingService/blob/master/LICENSE")
+@Version("0.1.2")
+@ApiInfo(title = "Id Generation", description = "<p>A RESTful service for creating unique ids.</p>", termsOfServiceUrl = "", contact = "bakiu@dbis.rwth-aachen.de", license = "MIT", licenseUrl = "https://github.com/rwth-acis/LAS2peer-IdGeneratingService/blob/master/LICENSE")
 public class IdGeneratingClass extends Service {
 
 	private String jdbcDriverClassName;
@@ -57,14 +53,15 @@ public class IdGeneratingClass extends Service {
 	private DatabaseManager dbm;
 
 	public IdGeneratingClass() {
-		
+
 		setFieldValues();
 		dbm = new DatabaseManager(jdbcDriverClassName, jdbcLogin, jdbcPass,
 				jdbcUrl, jdbcSchema);
 	}
 
 	/**
-	 * Method to generate new Id, store it in the database, and return the newly inserted value.
+	 * Method to generate new Id, store it in the database, and return the newly
+	 * inserted value.
 	 * 
 	 * @return HttpResponse
 	 */
@@ -83,6 +80,8 @@ public class IdGeneratingClass extends Service {
 		Connection conn = null;
 		PreparedStatement stmnt = null;
 		ResultSet rs = null;
+		String existingId = "";
+
 		try {
 			JSONObject o;
 			try {
@@ -93,49 +92,74 @@ public class IdGeneratingClass extends Service {
 			// if(getActiveAgent().getId() !=
 			// getActiveNode().getAnonymous().getId()){
 			Object callingServiceObj = new String("service");
-			//Object callingMethodObj = new String("calling_method");
-			//Object oidcUserObj = new String("OIDC_user");
+			// Object callingMethodObj = new String("calling_method");
+			// Object oidcUserObj = new String("OIDC_user");
+			Object hashValueObj = new String("hashValue");
 
 			String callingService = "";
-			//String callingMethod = "";
-			//String oidcUser = "";
+			// String callingMethod = "";
+			// String oidcUser = "";
+			String hashValue = "";
 
 			callingService = getKeyFromJSON(callingServiceObj, o, false);
-			//callingMethod = getKeyFromJSON(callingMethodObj, o, false);
-			//oidcUser = getKeyFromJSON(oidcUserObj, o, false);
+			// callingMethod = getKeyFromJSON(callingMethodObj, o, false);
+			// oidcUser = getKeyFromJSON(oidcUserObj, o, false);
+			hashValue = getKeyFromJSON(hashValueObj, o, false);
 
 			conn = dbm.getConnection();
 
 			if (!callingService.equals("")) {
 
-				PreparedStatement preparedStatement = null;
-				preparedStatement = conn.prepareStatement(
-						"INSERT INTO id_generated(service)"
-								+ "					 VALUES (?);",
-						Statement.RETURN_GENERATED_KEYS);
-				preparedStatement.setString(1, callingService);
-				// preparedStatement.setString(4, new
-				// Timestamp(date.getTime()).toString());
+				String selectQuery = "SELECT id FROM id_generated WHERE "
+						+ " hashValue = '" + hashValue + "'"
+						+ " and service = '" + callingService + "'";
 
-				preparedStatement.executeUpdate();
-				if(preparedStatement.getUpdateCount()>=0){
-					ResultSet keys = preparedStatement.getGeneratedKeys();
-					keys.next();
-					int key = keys.getInt(1);
-					String id = key + "";
+				// create the java statement
+				Statement selectSt = conn.createStatement();
 
+				// execute the query, and get a java resultset
+				ResultSet rsSelect = selectSt.executeQuery(selectQuery);
+
+				// iterate through the java resultset
+				if (rsSelect.next()) {
+					existingId = rsSelect.getString("id");
+					selectSt.close();
 					// return
-					HttpResponse r = new HttpResponse(id);
+					HttpResponse r = new HttpResponse(existingId);
 					r.setStatus(200);
 					return r;
 				} else {
-					String result = "Could not get an Id.";
-					// return
-					HttpResponse r = new HttpResponse(result);
-					r.setStatus(500);
-					return r;
+
+					PreparedStatement preparedStatement = null;
+					preparedStatement = conn.prepareStatement(
+							"INSERT INTO id_generated(service,hashValue)"
+									+ "					 VALUES (?,?);",
+							Statement.RETURN_GENERATED_KEYS);
+					preparedStatement.setString(1, callingService);
+					// preparedStatement.setString(4, new
+					// Timestamp(date.getTime()).toString());
+					preparedStatement.setString(2, hashValue);
+
+					preparedStatement.executeUpdate();
+					if (preparedStatement.getUpdateCount() >= 0) {
+						ResultSet keys = preparedStatement.getGeneratedKeys();
+						keys.next();
+						int key = keys.getInt(1);
+						String id = key + "";
+
+						// return
+						HttpResponse r = new HttpResponse(id);
+						r.setStatus(200);
+						return r;
+					} else {
+						String result = "Could not get an Id.";
+						// return
+						HttpResponse r = new HttpResponse(result);
+						r.setStatus(500);
+						return r;
+					}
 				}
-				
+
 			} else {
 				// return HTTP Response on error
 				HttpResponse er = new HttpResponse("Internal error: "
@@ -228,30 +252,30 @@ public class IdGeneratingClass extends Service {
 	}
 
 	// ================= Swagger Resource Listing & API Declarations
-		// =====================
+	// =====================
 
-		@GET
-		@Path("api-docs")
-		@Summary("retrieve Swagger 1.2 resource listing.")
-		@ApiResponses(value = {
-				@ApiResponse(code = 200, message = "Swagger 1.2 compliant resource listing"),
-				@ApiResponse(code = 404, message = "Swagger resource listing not available due to missing annotations."), })
-		@Produces(MediaType.APPLICATION_JSON)
-		public HttpResponse getSwaggerResourceListing() {
-			return RESTMapper.getSwaggerResourceListing(this.getClass());
-		}
+	@GET
+	@Path("api-docs")
+	@Summary("retrieve Swagger 1.2 resource listing.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Swagger 1.2 compliant resource listing"),
+			@ApiResponse(code = 404, message = "Swagger resource listing not available due to missing annotations."), })
+	@Produces(MediaType.APPLICATION_JSON)
+	public HttpResponse getSwaggerResourceListing() {
+		return RESTMapper.getSwaggerResourceListing(this.getClass());
+	}
 
-		@GET
-		@Path("api-docs/{tlr}")
-		@Produces(MediaType.APPLICATION_JSON)
-		@Summary("retrieve Swagger 1.2 API declaration for given top-level resource.")
-		@ApiResponses(value = {
-				@ApiResponse(code = 200, message = "Swagger 1.2 compliant API declaration"),
-				@ApiResponse(code = 404, message = "Swagger API declaration not available due to missing annotations."), })
-		public HttpResponse getSwaggerApiDeclaration(@PathParam("tlr") String tlr) {
-			return RESTMapper.getSwaggerApiDeclaration(this.getClass(), tlr, epUrl);
-		}
-		
+	@GET
+	@Path("api-docs/{tlr}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Summary("retrieve Swagger 1.2 API declaration for given top-level resource.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Swagger 1.2 compliant API declaration"),
+			@ApiResponse(code = 404, message = "Swagger API declaration not available due to missing annotations."), })
+	public HttpResponse getSwaggerApiDeclaration(@PathParam("tlr") String tlr) {
+		return RESTMapper.getSwaggerApiDeclaration(this.getClass(), tlr, epUrl);
+	}
+
 	/**
 	 * Method for debugging purposes. Here the concept of restMapping validation
 	 * is shown. It is important to check, if all annotations are correct and
