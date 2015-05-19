@@ -62,7 +62,7 @@ public class IdGeneratingClass extends Service {
 	/**
 	 * Method to generate new Id, store it in the database, and return the newly
 	 * inserted value.
-	 * 
+	 * @param data contains the service name and optionally the hashValue of the object
 	 * @return HttpResponse
 	 */
 
@@ -109,36 +109,67 @@ public class IdGeneratingClass extends Service {
 			conn = dbm.getConnection();
 
 			if (!callingService.equals("")) {
-
-				String selectQuery = "SELECT id FROM id_generated WHERE "
-						+ " hashValue = '" + hashValue + "'"
-						+ " and service = '" + callingService + "'";
-
-				// create the java statement
-				Statement selectSt = conn.createStatement();
-
-				// execute the query, and get a java resultset
-				ResultSet rsSelect = selectSt.executeQuery(selectQuery);
-
-				// iterate through the java resultset
-				if (rsSelect.next()) {
-					existingId = rsSelect.getString("id");
-					selectSt.close();
-					// return
-					HttpResponse r = new HttpResponse(existingId);
-					r.setStatus(200);
-					return r;
-				} else {
-
+					//if the app does not want to include hashValue
+					if (!hashValue.equals("")) {
+					String selectQuery = "SELECT id FROM id_generated WHERE "
+							+ " hashValue = '" + hashValue + "'"
+							+ " and service = '" + callingService + "'";
+	
+					// create the java statement
+					Statement selectSt = conn.createStatement();
+	
+					// execute the query, and get a java resultset
+					ResultSet rsSelect = selectSt.executeQuery(selectQuery);
+	
+					// iterate through the java resultset
+					if (rsSelect.next()) {
+						existingId = rsSelect.getString("id");
+						selectSt.close();
+						// return
+						HttpResponse r = new HttpResponse(existingId);
+						r.setStatus(200);
+						return r;
+					} else {
+	
+						PreparedStatement preparedStatement = null;
+						preparedStatement = conn.prepareStatement(
+								"INSERT INTO id_generated(service,hashValue)"
+										+ "					 VALUES (?,?);",
+								Statement.RETURN_GENERATED_KEYS);
+						preparedStatement.setString(1, callingService);
+						// preparedStatement.setString(4, new
+						// Timestamp(date.getTime()).toString());
+						preparedStatement.setString(2, hashValue);
+	
+						preparedStatement.executeUpdate();
+						if (preparedStatement.getUpdateCount() >= 0) {
+							ResultSet keys = preparedStatement.getGeneratedKeys();
+							keys.next();
+							int key = keys.getInt(1);
+							String id = key + "";
+	
+							// return
+							HttpResponse r = new HttpResponse(id);
+							r.setStatus(200);
+							return r;
+						} else {
+							String result = "Could not get an Id.";
+							// return
+							HttpResponse r = new HttpResponse(result);
+							r.setStatus(500);
+							return r;
+						}
+					}
+				}else{
 					PreparedStatement preparedStatement = null;
 					preparedStatement = conn.prepareStatement(
-							"INSERT INTO id_generated(service,hashValue)"
-									+ "					 VALUES (?,?);",
+							"INSERT INTO id_generated(service)"
+									+ "					 VALUES (?);",
 							Statement.RETURN_GENERATED_KEYS);
 					preparedStatement.setString(1, callingService);
 					// preparedStatement.setString(4, new
 					// Timestamp(date.getTime()).toString());
-					preparedStatement.setString(2, hashValue);
+					//preparedStatement.setString(2, hashValue);
 
 					preparedStatement.executeUpdate();
 					if (preparedStatement.getUpdateCount() >= 0) {
@@ -151,16 +182,15 @@ public class IdGeneratingClass extends Service {
 						HttpResponse r = new HttpResponse(id);
 						r.setStatus(200);
 						return r;
-					} else {
+					}  else {
 						String result = "Could not get an Id.";
 						// return
 						HttpResponse r = new HttpResponse(result);
 						r.setStatus(500);
 						return r;
 					}
-				}
-
-			} else {
+			}
+			}else {
 				// return HTTP Response on error
 				HttpResponse er = new HttpResponse("Internal error: "
 						+ "Missing JSON object member with key \""
