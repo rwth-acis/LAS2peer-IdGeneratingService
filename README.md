@@ -1,4 +1,7 @@
 # LAS2peer-IdGeneratingService
+
+[![Build Status](http://layers.dbis.rwth-aachen.de/jenkins/buildStatus/icon?job=LAS2peer-IdGeneratingService)](http://layers.dbis.rwth-aachen.de/jenkins/job/LAS2peer-IdGeneratingService/)
+
 LAS2peer-IdGeneratingService is a service that returns an ID when it is called.
 The POST request body needs to provide: 
  
